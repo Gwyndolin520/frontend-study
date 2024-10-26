@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import CountDown from './components/CountDown.vue';
 import Counter from './components/Counter.vue';
-import Demo1 from './components/Demo1.vue';
+
 import FormValidation from './components/FormValidation.vue';
 import LocalStorage from './components/LocalStorage.vue';
 import Mouse from './components/Mouse.vue';
 import Resize from './components/Resize.vue';
 import SendMessage from './components/SendMessage.vue';
- 
+import ActiveElement from './components/ActiveElement.vue'
 import ThemeToggle from './components/ThemeToggle.vue';
 import UserStatus from './components/UserStatus.vue';
 
@@ -15,12 +15,13 @@ import UserStatus from './components/UserStatus.vue';
 </script>
 
 <template>
-  <CountDown></CountDown>
-  <FormValidation></FormValidation>
- <SendMessage></SendMessage>
-  <ThemeToggle></ThemeToggle>
-<UserStatus></UserStatus>
-<Demo1/>
+  <ActiveElement/>
+  <!-- <CountDown></CountDown> -->
+  <!-- <FormValidation></FormValidation> -->
+ <!-- <SendMessage></SendMessage> -->
+  <!-- <ThemeToggle></ThemeToggle> -->
+<!-- <UserStatus></UserStatus> -->
+
 
   
   <!-- <Resize></Resize> -->

@@ -1,0 +1,200 @@
+<template>
+    <NavList></NavList>
+    <div class="question-square-container">
+        <div>
+            <div class="header">
+                <h1>问题</h1>
+                <div class="search-form">
+                    <el-input v-model="searchKeyword" placeholder="请输入标题或内容关键字"></el-input>
+                    <el-button type="primary" @click="searchQuestions">搜索</el-button>
+                </div>
+            </div>
+            <el-row :gutter="50" class="questions-grid">
+                <el-col :span="50" v-for="question in questions" :key="question.id" class="question-col">
+                    <el-card class="question-items">
+                        <QuestionItem style="margin-top: 2px;" :question="question" />
+                    </el-card>
+                </el-col>
+            </el-row>
+            <div style="text-align: center">
+                <button class="pagination" @click="prevPage" :disabled="isFirstPage"
+                    :class="{ disabled: isFirstPage }">上一页</button>
+                <button class="pagination" @click="nextPage" :disabled="isLastPage"
+                    :class="{ disabled: isLastPage }">下一页</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+
+<script setup lang="ts">
+import NavList from '@/components/NavList.vue';
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+import QuestionItem from '@/components/QuestionItem.vue';
+import { Question } from '@/types';
+
+const questions = ref<Question[]>([]);
+const searchKeyword = ref('');
+
+// const fetchQuestions = async () => {
+//     try {
+//         const response = await axios.get('http://localhost:8080/questions/all');
+//         questions.value = response.data.data;
+//         console.log('获取到的问题:', response.data.data);
+//     } catch (error) {
+//         console.error('获取问题失败:', error);
+//     }
+// };
+
+const limit = ref<number>(6)
+const offset = ref<number>(0)
+const total = ref<number>(0)
+const fetchByPage = (keyword?: string): void => {
+    let url = `http://localhost:8080/questions/page?limit=${limit.value}&offset=${offset.value}`;
+    if (keyword) {
+        url += `&keyword=${encodeURIComponent(keyword)}`;
+    }
+    axios.get(url)
+        .then((res) => {
+            questions.value = res.data.data.questions;
+            total.value = res.data.data.total;
+        })
+        .catch((error) => {
+            console.error('获取问题失败:', error);
+        })
+}
+
+const nextPage = (): void => {
+    if (offset.value + limit.value < total.value) {
+        offset.value += limit.value;
+        fetchByPage(searchKeyword.value);
+    }
+}
+
+const prevPage = (): void => {
+    if (offset.value > 0) {
+        offset.value -= limit.value;
+    }
+    fetchByPage(searchKeyword.value);
+}
+
+const isFirstPage = computed(() => offset.value === 0);
+
+const isLastPage = computed(() => offset.value + limit.value >= total.value);
+
+const searchQuestions = (): void => {
+    offset.value = 0;
+    fetchByPage(searchKeyword.value);
+}
+
+onMounted(() => {
+    // fetchQuestions();
+    fetchByPage();
+})
+</script>
+
+<style scoped>
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* margin-bottom: 20px; */
+}
+
+.header h1 {
+    color: #333;
+    margin: 0;
+    flex: 1;
+}
+
+.search-form {
+    display: flex;
+    /* align-items: center; */
+    max-width: 50%;
+    /* 可以根据需要调整最大宽度 */
+}
+
+.search-form .el-input {
+    width: 100%;
+    margin-right: 10px;
+}
+
+.pagination {
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    margin: 15px 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color .2s ease-in-out;
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    &:hover {
+        scale: 1.1;
+    }
+
+    &:active {
+        background-color: #000000;
+        /* 按下时更深的背景色 */
+        transform: translateY(2px);
+        /* 向下移动一点，模拟按下效果 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        /* 添加阴影，增加立体感 */
+    }
+}
+
+.question-square-container {
+    max-width: 80vw;
+    margin: 110px auto;
+}
+
+.questions-grid {
+    display: flex;
+    flex-wrap: wrap;
+    /* justify-content: space-between; */
+}
+.el-button{
+    background-color: #000000;
+    &:active {
+        background-color: #000000;
+        /* 按下时更深的背景色 */
+        transform: translateY(2px);
+        /* 向下移动一点，模拟按下效果 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        /* 添加阴影，增加立体感 */
+    }
+    &:hover{
+        background-color: #333;
+    }
+}
+.question-col {
+    margin-bottom: 20px;
+    width: calc(100% - 10px);
+    min-width: 200px;
+}
+
+.question-items {
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform .2s;
+}
+
+.question-items:hover {
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .question-col {
+        width: 100%;
+    }
+}
+</style>

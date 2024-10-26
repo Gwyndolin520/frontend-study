@@ -43,6 +43,7 @@ import CardParent from './components/CardParent.vue';
 import EmailFormParent from './components/EmailFormParent.vue';
 import LoginForm from './components/LoginForm.vue';
 import Practice from './components/Practice.vue';
+import Practice1 from './components/Practice1.vue';
 import GoodsList from './components/GoodsList.vue';
 
 
